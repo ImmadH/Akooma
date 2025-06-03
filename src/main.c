@@ -1,7 +1,3 @@
-#include <SDL3/SDL_events.h>
-#include <SDL3/SDL_init.h>
-#include <SDL3/SDL_oldnames.h>
-#include <SDL3/SDL_video.h>
 #include <glad/glad.h>
 #include <SDL3/SDL.h>
 #include <stdint.h>
@@ -10,6 +6,7 @@
 
 //-What is project Akuma?
 //Overall Goal: Create a renderer which will serve as a testbed for creating shaders
+//Test
 
 int main()
 {
@@ -48,7 +45,8 @@ int main()
     SDL_Quit();
   }
 
-  uint32_t mainShader = create_shader("shaders/vert.glsl" , "shaders/frag.glsl");
+  Shader colorShader;
+  create_shader(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
  
   float vertices[] =
   {
@@ -88,7 +86,7 @@ int main()
     glClearColor(0.5f, 0.4f, 0.6f, 1.0f);
 
     glBindVertexArray(VAO);
-    glUseProgram(mainShader);
+    use_shader(&colorShader);
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -100,7 +98,7 @@ int main()
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  delete_shader(mainShader);
+  delete_shader(&colorShader);
 
   return 0;
 }
