@@ -10,6 +10,7 @@ uint32_t create_shader(const char* vertexPath, const char* fragmentPath)
     printf("Failed to load shaders from file\n");
     return 0;
   }
+ 
   
   uint32_t VS, FS, ID;
   VS = compile_shader(GL_VERTEX_SHADER, vertexSource);

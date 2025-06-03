@@ -9,7 +9,6 @@
 typedef struct Shader 
 {
   uint32_t ID;
-
 } Shader;
 
 
