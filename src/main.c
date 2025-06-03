@@ -7,7 +7,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "shader.h"
-//test comment
+
+//-What is project Akuma?
+//Overall Goal: Create a renderer which will serve as a testbed for creating shaders
 
 int main()
 {
