@@ -6,7 +6,7 @@
 
 //-What is project Akuma?
 //Overall Goal: Create a renderer which will serve as a testbed for creating shaders
-//Test#2
+//This is a test of git
 
 int main()
 {
