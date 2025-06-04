@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/program.exe.dir/src/glad.c.o CMakeFiles/program.exe.dir/src/main.c.o CMakeFiles/program.exe.dir/src/shader.c.o -o program.exe   -L/usr/local/lib  -Wl,-rpath,/usr/local/lib -lSDL3 -lGL -ldl 
