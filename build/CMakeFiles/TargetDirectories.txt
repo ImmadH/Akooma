@@ -1,3 +1,0 @@
-/home/immad/projects/Akuma/build/CMakeFiles/program.exe.dir
-/home/immad/projects/Akuma/build/CMakeFiles/edit_cache.dir
-/home/immad/projects/Akuma/build/CMakeFiles/rebuild_cache.dir
