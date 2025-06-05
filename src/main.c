@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "shader.h"
-#include <cglm/cglm.h>
+#include "camera.h"
+
 //-What is project Akuma?
 //Overall Goal: Create a renderer which will serve as a testbed for creating shaders
 //This is a test of git
