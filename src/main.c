@@ -93,7 +93,6 @@ int main()
 
     SDL_GL_SwapWindow(WINDOW);
 
-
   }
 
   glDeleteVertexArrays(1, &VAO);
