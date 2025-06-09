@@ -1,7 +1,7 @@
 #include "shader.h"
 
 
-void create_shader(Shader* shader, const char* vertexPath, const char* fragmentPath)
+void shader_create(Shader* shader, const char* vertexPath, const char* fragmentPath)
 {
   char* vertexSource = read_file(vertexPath);
   char* fragmentSource = read_file(fragmentPath);
@@ -30,13 +30,13 @@ void create_shader(Shader* shader, const char* vertexPath, const char* fragmentP
   free(fragmentSource);
 }
 
-void delete_shader(Shader* shader)
+void shader_delete(Shader* shader)
 {
   glDeleteProgram(shader->ID);
   shader->ID = 0;
 }
 
-void use_shader(const Shader* shader)
+void shader_use(const Shader* shader)
 {
   glUseProgram(shader->ID);
 }
