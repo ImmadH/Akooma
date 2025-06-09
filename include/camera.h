@@ -11,7 +11,7 @@ typedef enum
   RIGHT,
   UP,
   DOWN
-} camera_movement;
+} cameraMovement;
 
 
 typedef struct Camera
@@ -24,27 +24,18 @@ typedef struct Camera
 
   float yaw;
   float pitch;
-  float movement_speed;
-  float mouse_sensitivity;
+  float speed;
+  float sensitivity;
 
 } Camera;
 
-//TODO:
-//calculate delta time in main 
-//-camera initialization // we need to define default values like cameraPos, yaw, pitch.
-//and pass delta time 
-//
-//-Within init we update camera vectors?
-//
-//-process keyboard input
-//-process mouse movement 
-//-need a function to calculate view matrix
 
+void update_camera_vectors(Camera* camera);
+void camera_init(Camera* camera, vec3 camPos, vec3 up, float yaw, float pitch);
+void camera_process_keyboard(Camera* camera, cameraMovement direction, float deltaTime);
+void camera_process_mouse(Camera* camera, float xoffset, float yoffset);
+void camera_get_view_matrix(Camera* camera, mat4 dest);
 
-//Misc but dont forget!:
-//-Rewrite shaders
-//-Projection and Model matrix!!!
-//-Make SDL handle the input ->WASD (is pressed?) -> call process functions
 
 
 
