@@ -16,9 +16,9 @@ typedef struct Shader
 
 //in main: Shader myShader = createShader()
 //pass file paths return the shader program to ID with compiled shaders
-void create_shader(Shader* shader, const char* vertexPath, const char* fragmentPath);
-void delete_shader(Shader* shader);
-void use_shader(const Shader* shader);
+void shader_create(Shader* shader, const char* vertexPath, const char* fragmentPath);
+void shader_delete(Shader* shader);
+void shader_use(const Shader* shader);
 
 //utility
 uint32_t compile_shader(uint32_t shaderType, const char* shaderSource);
