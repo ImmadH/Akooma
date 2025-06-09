@@ -1,14 +1,16 @@
+#include <SDL3/SDL_keycode.h>
 #include <glad/glad.h>
 #include <SDL3/SDL.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "cglm/types.h"
 #include "shader.h"
 #include "camera.h"
 
 //-What is project Akuma?
 //Overall Goal: Create a renderer which will serve as a testbed for creating shaders
 //This is a test of git
-
+void handle_input(Camera* camera, float deltaTime);
 int main()
 {
   unsigned int SCR_WIDTH = 1920;
@@ -46,8 +48,17 @@ int main()
     SDL_Quit();
   }
 
+  Camera camera;
+  vec3 startPos = {0.0f, 0.0f, 3.0f};
+  vec3 upVector = {0.0f, 1.0f, 0.0f};
+  camera_init(&camera, startPos, upVector, -90.0f, 0.0f);
+  mat4 projection;
+  glm_perspective(glm_rad(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f, projection);
+
+
+
   Shader colorShader;
-  create_shader(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
+  shader_create(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
  
   float vertices[] =
   {
@@ -70,6 +81,7 @@ int main()
   
   bool running = true;
   SDL_Event e;
+  uint64_t last_time = SDL_GetTicks();
 
   while(running)
   {
@@ -80,14 +92,38 @@ int main()
         case SDL_EVENT_QUIT:
         running = false;
         break;
+        case SDL_EVENT_KEY_DOWN:
+          switch(e.key.key)
+          {
+            case SDLK_ESCAPE:
+                 running = false;
+                 break;
+          }
       }
     }
     
+    //delta time 
+    uint64_t current_time = SDL_GetTicks();
+    float dt = (current_time - last_time) / 1000.0f; // seconds
+    last_time = current_time;
+
+    handle_input(&camera, dt);
+
+
+    
     glClear(GL_COLOR_BUFFER_BIT);
-    glClearColor(0.5f, 0.4f, 0.6f, 1.0f);
+    glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+
+    mat4 view;
+    camera_get_view_matrix(&camera, view);
+
+    shader_use(&colorShader); 
+    glUniformMatrix4fv(glGetUniformLocation(colorShader.ID, "view"), 1, GL_FALSE, (float*)view);
+    glUniformMatrix4fv(glGetUniformLocation(colorShader.ID, "projection"), 1, GL_FALSE, (float*)projection);
+
 
     glBindVertexArray(VAO);
-    use_shader(&colorShader);
+    
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -98,9 +134,25 @@ int main()
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  delete_shader(&colorShader);
+  shader_delete(&colorShader);
 
   return 0;
+}
+
+
+void handle_input(Camera* cam, float dt) {
+    const bool* keys = SDL_GetKeyboardState(NULL);
+
+    if (keys[SDL_SCANCODE_W]) camera_process_keyboard(cam, FORWARD, dt);
+    if (keys[SDL_SCANCODE_S]) camera_process_keyboard(cam, BACKWARD, dt);
+    if (keys[SDL_SCANCODE_A]) camera_process_keyboard(cam, LEFT, dt);
+    if (keys[SDL_SCANCODE_D]) camera_process_keyboard(cam, RIGHT, dt);
+    if (keys[SDL_SCANCODE_SPACE]) camera_process_keyboard(cam, UP, dt);
+    if (keys[SDL_SCANCODE_LCTRL]) camera_process_keyboard(cam, DOWN, dt);
+
+    float dx, dy;
+    SDL_GetRelativeMouseState(&dx, &dy);
+    camera_process_mouse(cam, dx, -dy);  
 }
 
 
