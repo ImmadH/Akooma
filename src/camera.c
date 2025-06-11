@@ -1,6 +1,5 @@
 #include "camera.h"
 
-
 void update_camera_vectors(Camera* camera)
 {
 

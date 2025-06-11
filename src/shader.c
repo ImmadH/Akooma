@@ -1,6 +1,5 @@
 #include "shader.h"
 
-
 void shader_create(Shader* shader, const char* vertexPath, const char* fragmentPath)
 {
   char* vertexSource = read_file(vertexPath);
