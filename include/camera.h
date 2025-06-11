@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #include <stdint.h>
-#include <cglm/cglm.h>
+#include "cglm/cglm.h"
 
 typedef enum
 {
