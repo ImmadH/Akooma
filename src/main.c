@@ -1,16 +1,14 @@
-#include <SDL3/SDL_keycode.h>
 #include <glad/glad.h>
 #include <SDL3/SDL.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "cglm/types.h"
 #include "shader.h"
 #include "camera.h"
+#include "gui.h"
 
-//-What is project Akuma?
-//Overall Goal: Create a renderer which will serve as a testbed for creating shaders
-//This is a test of git
 void handle_input(Camera* camera, float deltaTime);
+
 int main()
 {
   unsigned int SCR_WIDTH = 1920;
@@ -21,13 +19,16 @@ int main()
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   
-  SDL_Window *WINDOW = SDL_CreateWindow("Akuma", SCR_WIDTH, SCR_HEIGHT, SDL_WINDOW_OPENGL);
+  SDL_Window* WINDOW = SDL_CreateWindow("Akuma", SCR_WIDTH, SCR_HEIGHT, SDL_WINDOW_OPENGL);
   if (!WINDOW)
   {
     printf("Failed to create SDL Window\n");
     SDL_Quit();
     return -1;
   }
+
+  //SDL_SetWindowRelativeMouseMode(WINDOW, true);
+
 
   SDL_GLContext CONTEXT = SDL_GL_CreateContext(WINDOW);
   if (!CONTEXT)
@@ -39,7 +40,7 @@ int main()
   }
 
   SDL_GL_MakeCurrent(WINDOW, CONTEXT);
-  
+
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
   {
     printf("Failed to load GLAD\n");
@@ -47,6 +48,8 @@ int main()
     SDL_DestroyWindow(WINDOW);
     SDL_Quit();
   }
+
+  gui_init(WINDOW, CONTEXT);
 
   Camera camera;
   vec3 startPos = {0.0f, 0.0f, 3.0f};
@@ -87,6 +90,7 @@ int main()
   {
     while(SDL_PollEvent(&e))
     {
+      gui_process_event(&e);
       switch (e.type) 
       {
         case SDL_EVENT_QUIT:
@@ -100,6 +104,9 @@ int main()
                  break;
           }
       }
+      
+
+
     }
     
     //delta time 
@@ -109,8 +116,8 @@ int main()
 
     handle_input(&camera, dt);
 
+    gui_new_frame();
 
-    
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 
@@ -127,11 +134,12 @@ int main()
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    gui_render();
 
     SDL_GL_SwapWindow(WINDOW);
 
   }
-
+  gui_shutdown();
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   shader_delete(&colorShader);
@@ -140,7 +148,8 @@ int main()
 }
 
 
-void handle_input(Camera* cam, float dt) {
+void handle_input(Camera *cam, float dt) 
+{
     const bool* keys = SDL_GetKeyboardState(NULL);
 
     if (keys[SDL_SCANCODE_W]) camera_process_keyboard(cam, FORWARD, dt);

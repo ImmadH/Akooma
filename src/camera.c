@@ -1,10 +1,6 @@
 #include "camera.h"
 
 
-#include "camera.h"
-#include <cglm/cglm.h>
-
-
 void update_camera_vectors(Camera* camera)
 {
 
@@ -28,7 +24,7 @@ void camera_init(Camera* camera, vec3 camPos, vec3 up, float yaw, float pitch)
     camera->yaw = yaw;
     camera->pitch = pitch;
     camera->speed = 5.0f;
-    camera->sensitivity = 0.1f;
+    camera->sensitivity = 0.2f;
     update_camera_vectors(camera);
 }
 
