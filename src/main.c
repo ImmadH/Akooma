@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad.h>
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 #include <stdint.h>

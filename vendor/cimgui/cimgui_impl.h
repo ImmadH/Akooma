@@ -73,7 +73,6 @@ CIMGUI_API void ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode mode,st
 #endif
 #ifdef CIMGUI_USE_SDL3
 #ifdef CIMGUI_DEFINE_ENUMS_AND_STRUCTS
-
 typedef struct SDL_Window SDL_Window;
 typedef struct SDL_Renderer SDL_Renderer;
 typedef struct SDL_Gamepad SDL_Gamepad;
