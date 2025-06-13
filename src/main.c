@@ -8,9 +8,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "gui.h"
-//TODO:
-//Make camera system input invalid when GUI is open while keeping the same camera vectors
-//
+
 void camera_handle_input(Camera* camera, float deltaTime);
 
 int main()
@@ -30,7 +28,10 @@ int main()
     SDL_Quit();
     return -1;
   }
-
+  
+  SDL_SetWindowMouseGrab(WINDOW, true);
+  SDL_SetWindowRelativeMouseMode(WINDOW, true);
+  SDL_HideCursor();
 
   SDL_GLContext CONTEXT = SDL_GL_CreateContext(WINDOW);
   if (!CONTEXT)
@@ -84,6 +85,7 @@ int main()
   
   bool running = true;
   bool guiActive = false;
+  bool lastGuiState = guiActive;
   SDL_Event e;
   uint64_t lastTime = SDL_GetTicks();
 
@@ -111,20 +113,22 @@ int main()
 
     }
 
+    if (guiActive != lastGuiState) 
+    {
+      gui_active(WINDOW, guiActive);
+      lastGuiState = guiActive;
+    }
 
-    
     //delta time 
     uint64_t currentTime = SDL_GetTicks();
     float deltaTime = (currentTime - lastTime) / 1000.0f; // seconds
     lastTime = currentTime;
     
-    if(!guiActive)
+    if (!guiActive)
     {
       camera_handle_input(&camera, deltaTime);
     }
-
-
-
+  
     gui_new_frame(guiActive);
     
     glClear(GL_COLOR_BUFFER_BIT);
@@ -150,10 +154,13 @@ int main()
     SDL_GL_SwapWindow(WINDOW);
 
   }
+  SDL_GL_DestroyContext(CONTEXT);
+	SDL_DestroyWindow(WINDOW);
+	SDL_Quit();
   gui_shutdown();
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
-  shader_delete(&colorShader);
+  shader_delete(&colorShader); 
 
   return 0;
 }

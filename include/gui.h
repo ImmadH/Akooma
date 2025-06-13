@@ -9,6 +9,7 @@ void gui_shutdown(void);
 void gui_new_frame(bool active);
 void gui_render(void);
 bool gui_process_event(SDL_Event* e);
+void gui_active(SDL_Window* window, bool active);
 
 #endif 
 

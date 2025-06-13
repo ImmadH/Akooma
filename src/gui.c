@@ -1,8 +1,7 @@
 #include "gui.h"
-#include <SDL3/SDL_mouse.h>
 #include <cimgui.h>
 #include <cimgui_impl.h>
-#include <sys/wait.h>
+#include <SDL3/SDL.h>
 void gui_init(SDL_Window* window, SDL_GLContext context)
 {
     igCreateContext(NULL);
@@ -48,3 +47,17 @@ bool gui_process_event(SDL_Event* event)
   return ImGui_ImplSDL3_ProcessEvent(event);
 }
 
+
+void gui_active(SDL_Window* window, bool active)
+{
+      SDL_SetWindowMouseGrab(window, !active);
+      SDL_SetWindowRelativeMouseMode(window, !active);
+      if(active)
+         SDL_ShowCursor();
+      else
+      {
+         SDL_HideCursor();
+         float dx, dy;
+         SDL_GetRelativeMouseState(&dx, &dy);
+      }
+}
