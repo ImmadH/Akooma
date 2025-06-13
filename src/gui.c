@@ -1,27 +1,34 @@
 #include "gui.h"
+#include <SDL3/SDL_mouse.h>
 #include <cimgui.h>
 #include <cimgui_impl.h>
-
+#include <sys/wait.h>
 void gui_init(SDL_Window* window, SDL_GLContext context)
 {
     igCreateContext(NULL);
     igStyleColorsDark(NULL);
-
+    
     ImGui_ImplSDL3_InitForOpenGL(window, context);
     ImGui_ImplOpenGL3_Init("#version 460");
+
+    ImGuiIO* io = igGetIO_Nil();
+    ImFontAtlas_AddFontDefault(io->Fonts, NULL);
+    io->FontGlobalScale = 2.5f;
 }
 
-void gui_new_frame(void)
+void gui_new_frame(bool active)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     igNewFrame();
-
-
-    igBegin("Akuma", NULL, 0);               
-    igText("Hello Text!");
-    igEnd();
+    if(active)
+    {
+      igBegin("Akuma", NULL, 0);               
+      igText("Hello Text!");
+      igEnd();
+    }
 }
+    
 
 void gui_render(void)
 {

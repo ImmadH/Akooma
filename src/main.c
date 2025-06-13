@@ -1,3 +1,5 @@
+#include <SDL3/SDL_mouse.h>
+#include <SDL3/SDL_video.h>
 #include <glad.h>
 #include <SDL3/SDL.h>
 #include <stdbool.h>
@@ -6,13 +8,15 @@
 #include "shader.h"
 #include "camera.h"
 #include "gui.h"
-
-void handle_input(Camera* camera, float deltaTime);
+//TODO:
+//Make camera system input invalid when GUI is open while keeping the same camera vectors
+//
+void camera_handle_input(Camera* camera, float deltaTime);
 
 int main()
 {
-  unsigned int SCR_WIDTH = 1920;
-  unsigned int SCR_HEIGHT = 1080;
+  unsigned int SCR_WIDTH = 2560;
+  unsigned int SCR_HEIGHT = 1440;
   
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
@@ -26,8 +30,6 @@ int main()
     SDL_Quit();
     return -1;
   }
-
-  //SDL_SetWindowRelativeMouseMode(WINDOW, true);
 
 
   SDL_GLContext CONTEXT = SDL_GL_CreateContext(WINDOW);
@@ -58,8 +60,6 @@ int main()
   mat4 projection;
   glm_perspective(glm_rad(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f, projection);
 
-
-
   Shader colorShader;
   shader_create(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
  
@@ -83,8 +83,9 @@ int main()
   //unbind here
   
   bool running = true;
+  bool guiActive = false;
   SDL_Event e;
-  uint64_t last_time = SDL_GetTicks();
+  uint64_t lastTime = SDL_GetTicks();
 
   while(running)
   {
@@ -102,22 +103,30 @@ int main()
             case SDLK_ESCAPE:
                  running = false;
                  break;
+            case SDLK_INSERT:
+                 guiActive = !guiActive;
+                 break;
           }
       }
-      
-
 
     }
+
+
     
     //delta time 
-    uint64_t current_time = SDL_GetTicks();
-    float dt = (current_time - last_time) / 1000.0f; // seconds
-    last_time = current_time;
+    uint64_t currentTime = SDL_GetTicks();
+    float deltaTime = (currentTime - lastTime) / 1000.0f; // seconds
+    lastTime = currentTime;
+    
+    if(!guiActive)
+    {
+      camera_handle_input(&camera, deltaTime);
+    }
 
-    handle_input(&camera, dt);
 
-    gui_new_frame();
 
+    gui_new_frame(guiActive);
+    
     glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
 
@@ -133,9 +142,11 @@ int main()
     
 
     glDrawArrays(GL_TRIANGLES, 0, 3);
-
+    
+    
     gui_render();
-
+    
+    
     SDL_GL_SwapWindow(WINDOW);
 
   }
@@ -148,20 +159,20 @@ int main()
 }
 
 
-void handle_input(Camera *cam, float dt) 
+void camera_handle_input(Camera *camera, float deltaTime) 
 {
     const bool* keys = SDL_GetKeyboardState(NULL);
 
-    if (keys[SDL_SCANCODE_W]) camera_process_keyboard(cam, FORWARD, dt);
-    if (keys[SDL_SCANCODE_S]) camera_process_keyboard(cam, BACKWARD, dt);
-    if (keys[SDL_SCANCODE_A]) camera_process_keyboard(cam, LEFT, dt);
-    if (keys[SDL_SCANCODE_D]) camera_process_keyboard(cam, RIGHT, dt);
-    if (keys[SDL_SCANCODE_SPACE]) camera_process_keyboard(cam, UP, dt);
-    if (keys[SDL_SCANCODE_LCTRL]) camera_process_keyboard(cam, DOWN, dt);
+    if (keys[SDL_SCANCODE_W]) camera_process_keyboard(camera, FORWARD, deltaTime);
+    if (keys[SDL_SCANCODE_S]) camera_process_keyboard(camera, BACKWARD, deltaTime);
+    if (keys[SDL_SCANCODE_A]) camera_process_keyboard(camera, LEFT, deltaTime);
+    if (keys[SDL_SCANCODE_D]) camera_process_keyboard(camera, RIGHT, deltaTime);
+    if (keys[SDL_SCANCODE_SPACE]) camera_process_keyboard(camera, UP, deltaTime);
+    if (keys[SDL_SCANCODE_LCTRL]) camera_process_keyboard(camera, DOWN, deltaTime);
 
     float dx, dy;
     SDL_GetRelativeMouseState(&dx, &dy);
-    camera_process_mouse(cam, dx, -dy);  
+    camera_process_mouse(camera, dx, -dy);  
 }
 
 
