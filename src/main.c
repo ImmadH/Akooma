@@ -50,17 +50,20 @@ int main()
     SDL_GL_DestroyContext(CONTEXT);
     SDL_DestroyWindow(WINDOW);
     SDL_Quit();
+    return -1;
   }
 
   gui_init(WINDOW, CONTEXT);
-
+  
+  //Camera Init
   Camera camera;
   vec3 startPos = {0.0f, 0.0f, 3.0f};
   vec3 upVector = {0.0f, 1.0f, 0.0f};
   camera_init(&camera, startPos, upVector, -90.0f, 0.0f);
   mat4 projection;
   glm_perspective(glm_rad(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f, projection);
-
+  
+  //Shader Init
   Shader colorShader;
   shader_create(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
  
@@ -83,6 +86,7 @@ int main()
 
   //unbind here
   
+  //Application Config
   bool running = true;
   bool guiActive = false;
   bool lastGuiState = guiActive;
