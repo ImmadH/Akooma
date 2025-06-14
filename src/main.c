@@ -8,7 +8,8 @@
 #include "shader.h"
 #include "camera.h"
 #include "gui.h"
-
+#include "model.h"
+#include "util.h"
 void camera_handle_input(Camera* camera, float deltaTime);
 
 int main()
@@ -43,6 +44,8 @@ int main()
   }
 
   SDL_GL_MakeCurrent(WINDOW, CONTEXT);
+  
+
 
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
   {
@@ -53,6 +56,9 @@ int main()
     return -1;
   }
 
+  glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT); 
+  glEnable(GL_DEPTH_TEST); 
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   gui_init(WINDOW, CONTEXT);
   
   //Camera Init
@@ -67,24 +73,13 @@ int main()
   Shader colorShader;
   shader_create(&colorShader, "shaders/vert.glsl" , "shaders/frag.glsl");
  
-  float vertices[] =
+
+  Model* cube = model_load("assets/bunny/scene.gltf");
+  if(!cube)
   {
-    -0.5f, -0.5f, 0.0f, // left  
-     0.5f, -0.5f, 0.0f, // right 
-     0.0f,  0.5f, 0.0f  // top   
-  };
-
-  GLuint VAO, VBO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  //unbind here
+    fprintf(stderr, "FAILED TO LOAD CUBE");
+    return -1;
+  }
   
   //Application Config
   bool running = true;
@@ -135,21 +130,27 @@ int main()
   
     gui_new_frame(guiActive);
     
-    glClear(GL_COLOR_BUFFER_BIT);
+    
+
     glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     mat4 view;
+    mat4 modelMtx;
+    glm_mat4_identity(modelMtx);
     camera_get_view_matrix(&camera, view);
 
     shader_use(&colorShader); 
     glUniformMatrix4fv(glGetUniformLocation(colorShader.ID, "view"), 1, GL_FALSE, (float*)view);
     glUniformMatrix4fv(glGetUniformLocation(colorShader.ID, "projection"), 1, GL_FALSE, (float*)projection);
+    uint32_t locModel = glGetUniformLocation(colorShader.ID, "model");
+    glUniformMatrix4fv(locModel, 1, GL_FALSE, (float*)modelMtx);
 
 
-    glBindVertexArray(VAO);
     
-
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    model_draw(cube);
+    
     
     
     gui_render();
@@ -162,8 +163,7 @@ int main()
 	SDL_DestroyWindow(WINDOW);
 	SDL_Quit();
   gui_shutdown();
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
+  model_delete(cube);
   shader_delete(&colorShader); 
 
   return 0;

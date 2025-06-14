@@ -32,7 +32,12 @@ MeshList* mesh_load(const char* filePath)
   MeshList* meshList = malloc(sizeof(MeshList));
   meshList->meshes = malloc(sizeof(Mesh) * primitiveCount);
   meshList->meshCount = 0;
-
+  if(!meshList || !meshList->meshes)
+  {
+    fprintf(stderr, "FAILED MEMORY MESH LOAD");
+    cgltf_free(data);
+    return NULL;
+  }
 
   //now loaded -> extract vertices and indices etc.
   for (int i = 0; i < data->meshes_count; ++i)
@@ -58,7 +63,11 @@ MeshList* mesh_load(const char* filePath)
 
       mesh.vertexCount = position_accessor->count;
       mesh.vertices = malloc(sizeof(Vertex) * mesh.vertexCount);
-      
+      if (!position_accessor)
+      {
+        fprintf(stderr, "NO POS ATTTRIB");
+        return NULL;
+      }
 
       for (size_t v = 0; v < mesh.vertexCount; ++v) 
       {
@@ -144,8 +153,18 @@ void mesh_delete(Mesh* mesh)
 
 void mesh_list_delete(MeshList* list) 
 {
-    for (size_t i = 0; i < list->meshCount; ++i)
-        mesh_delete(&list->meshes[i]);
+    //for (size_t i = 0; i < list->meshCount; ++i)
+    //    mesh_delete(&list->meshes[i]);
     free(list->meshes);
     free(list);
+}
+
+void mesh_draw(const Mesh* mesh)
+{
+    glBindVertexArray(mesh->VAO);
+    if (mesh->indexCount > 0)
+        glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+    else
+        glDrawArrays(GL_TRIANGLES, 0, mesh->vertexCount);
+    glBindVertexArray(0);
 }
